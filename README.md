@@ -8,11 +8,6 @@ ExchangeSharp is a C# **framework/lib** and [console app](#Installing-the-CLI) f
 
 Feel free to visit the discord channel at https://discord.gg/sHCUHH3 and chat with other developers.
 
-### Sponsored Link
-
-“ExchangeSharp is being sponsored by the following tool; please help to support us by taking a look and signing up for a free trial”  
-<a href="https://tracking.gitads.io/?repo=ExchangeSharp"><img src="https://images.gitads.io/ExchangeSharp" alt="GitAds"/></a>
-
 ### Features
 
 - Many exchanges supported with public, private and web socket API
@@ -167,7 +162,7 @@ Believe it or not, donations are quite rare. I've posted publicly the total dona
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=L67Q4KQN5DHLY)
 
 Donation totals:
-0.02350084 BTC, 10.25 LTC
+0.039 BTC, 10.25 LTC
 
 Thanks for visiting!
 
