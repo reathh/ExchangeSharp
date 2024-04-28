@@ -346,6 +346,7 @@ namespace ExchangeSharp
 		{
 			//"buy 0.00000001 XBTUSD @ limit 1000000"
 			//"buy 58.00000000 ADAUSDT @ market"
+			// buy 0.00020000 XBTUSD @ trailing stop +0.1000% -> limit +0.0 with 5:1 leverage
 			string[] orderStrParts = orderStr.Split(' ');
 			result.IsBuy = string.Equals(
 					orderStrParts[0],
@@ -354,15 +355,25 @@ namespace ExchangeSharp
 			);
 			result.Amount = orderStrParts[1].ConvertInvariant<decimal>();
 			result.MarketSymbol = orderStrParts[2];
+
 			var isMarket = string.Equals(
 					orderStrParts[4],
 					"market",
 					StringComparison.InvariantCultureIgnoreCase
 			);
-			if (!isMarket)
+
+
+			var isTrailingStop = string.Equals(
+					orderStrParts[4],
+					"trailing",
+					StringComparison.InvariantCultureIgnoreCase
+			);
+
+			if (!isMarket && !isTrailingStop)
 			{
 				result.Price = orderStrParts[5].ConvertInvariant<decimal>();
 			}
+
 			return result;
 		}
 
@@ -994,7 +1005,7 @@ namespace ExchangeSharp
 				payload["oflags"] = "post"; //  post-only order (available when ordertype = limit)
 			order.ExtraParameters.CopyTo(payload);
 
-			JToken token = await MakeJsonRequestAsync<JToken>("/0/private/AddOrder", null, payload);
+			JToken token = await MakeJsonRequestAsync<JToken>("/0/private/AddOrder", null, payload, "POST");
 			ExchangeOrderResult result = new ExchangeOrderResult
 			{
 				OrderDate = CryptoUtility.UtcNow,

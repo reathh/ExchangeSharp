@@ -24,6 +24,7 @@
     <RepositoryUrl>https://github.com/DigitalRuby/ExchangeSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 	
   <ItemGroup>
