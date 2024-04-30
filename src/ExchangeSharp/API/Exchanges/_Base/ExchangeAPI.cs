@@ -334,6 +334,14 @@ namespace ExchangeSharp
 				Action<ExchangeOrderResult> callback
 		) => throw new NotImplementedException();
 
+		protected virtual Task<IWebSocket> OnGetOrderDetailsWebSocketAsync(
+			Action<IEnumerable<ExchangeOrderResult>> callback
+		) => throw new NotImplementedException();
+
+		protected virtual Task<IWebSocket> OnGetOrderDetailsListWebSocketAsync(
+			Action<IEnumerable<ExchangeOrderResult>> callback
+		) => throw new NotImplementedException();
+
 		protected virtual Task<IWebSocket> OnGetCompletedOrderDetailsWebSocketAsync(
 				Action<ExchangeOrderResult> callback
 		) => throw new NotImplementedException();
@@ -1570,6 +1578,19 @@ namespace ExchangeSharp
 		{
 			callback.ThrowIfNull(nameof(callback), "Callback must not be null");
 			return OnGetOrderDetailsWebSocketAsync(callback);
+		}
+
+		/// <summary>
+		/// Get the details of all changed orders via web socket
+		/// </summary>
+		/// <param name="callback">Callback which supports list of ExchangeOrderResult</param>
+		/// <returns>Web socket, call Dispose to close</returns>
+		public virtual Task<IWebSocket> GetOrderDetailsListWebSocketAsync(
+			Action<IEnumerable<ExchangeOrderResult>> callback
+		)
+		{
+			callback.ThrowIfNull(nameof(callback), "Callback must not be null");
+			return OnGetOrderDetailsListWebSocketAsync(callback);
 		}
 
 		/// <summary>

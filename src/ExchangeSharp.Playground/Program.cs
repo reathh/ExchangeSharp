@@ -1,4 +1,5 @@
-﻿using ExchangeSharp;
+﻿using System.Collections;
+using ExchangeSharp;
 using Newtonsoft.Json;
 
 var publicKey = "r0PKnX6CfxaVlvCJ/JFOlYzRozG/rV0GkOK5lWBo/gL7XRNkvNzDOMtQ";
@@ -9,9 +10,9 @@ using var api = await ExchangeAPI.GetExchangeAPIAsync<ExchangeKrakenAPI>();
 api.PublicApiKey = publicKey.ToSecureString();
 api.PrivateApiKey = privateKey.ToSecureString();
 
-var socket = await api.GetOrderDetailsWebSocketAsync(order =>
+var socket = await api.GetOrderDetailsListWebSocketAsync(orders =>
 {
-	var json = JsonConvert.SerializeObject(order, Formatting.Indented);
+	var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
 
 	Console.WriteLine(json);
 });

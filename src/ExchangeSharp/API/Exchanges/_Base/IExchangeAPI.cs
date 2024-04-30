@@ -350,6 +350,13 @@ namespace ExchangeSharp
 		Task<IWebSocket> GetOrderDetailsWebSocketAsync(Action<ExchangeOrderResult> callback);
 
 		/// <summary>
+		/// Get the details of all changed orders via web socket
+		/// </summary>
+		/// <param name="callback">Callback which supports list of ExchangeOrderResult</param>
+		/// <returns>Web socket, call Dispose to close</returns>
+		public Task<IWebSocket> GetOrderDetailsListWebSocketAsync(Action<IEnumerable<ExchangeOrderResult>> callback);
+
+		/// <summary>
 		/// Get the details of all completed orders via web socket
 		/// </summary>
 		/// <param name="callback">Callback</param>

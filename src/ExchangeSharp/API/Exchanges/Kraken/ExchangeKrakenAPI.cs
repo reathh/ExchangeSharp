@@ -1274,47 +1274,68 @@ namespace ExchangeSharp
 		}
 
 		protected override async Task<IWebSocket> OnGetOrderDetailsWebSocketAsync(Action<ExchangeOrderResult> callback)
+			=> await OnGetOrderDetailsBaseWebSocketAsync(callback);
+
+		protected override async Task<IWebSocket> OnGetOrderDetailsListWebSocketAsync(Action<IEnumerable<ExchangeOrderResult>> callback)
+			=> await OnGetOrderDetailsBaseWebSocketAsync(null, callback);
+
+		private async Task<IWebSocket> OnGetOrderDetailsBaseWebSocketAsync(Action<ExchangeOrderResult> callback = null, Action<IEnumerable<ExchangeOrderResult>> listCallback = null)
 		{
 			// @see: https://docs.kraken.com/websockets/#message-openOrders
 			return await ConnectPrivateWebSocketAsync(
-					null,
-					messageCallback: async (_socket, msg) =>
+				null,
+				messageCallback: async (_socket, msg) =>
+				{
+					if (JToken.Parse(msg.ToStringFromUTF8()) is JArray token)
 					{
-						if (JToken.Parse(msg.ToStringFromUTF8()) is JArray token)
+						if (token.Count == 3 && token[1].ToString() == "openOrders")
 						{
-							if (token.Count == 3 && token[1].ToString() == "openOrders")
+							var orderList = new List<ExchangeOrderResult>();
+
+							foreach (JToken element in token[0])
 							{
-								foreach (JToken element in token[0])
+								if (element is JObject jObject)
 								{
-									if (element is JObject order)
+
+									foreach (JProperty property in jObject.Properties())
 									{
-										foreach (JProperty property in order.Properties())
-										{
-											string orderId = property.Name;
+										string orderId = property.Name;
 
-											JToken body = property.Value;
+										JToken body = property.Value;
 
-											callback(ParseOrder(orderId, body));
-										}
+										var exchangeOrderResult = ParseOrder(orderId, body);
+
+										orderList.Add(exchangeOrderResult);
 									}
 								}
 							}
+
+							listCallback?.Invoke(orderList);
+
+							if (callback != null)
+							{
+								foreach (var order in orderList)
+								{
+									callback(order);
+								}
+							}
 						}
-
-						await Task.CompletedTask;
-					},
-					connectCallback: async (_socket) =>
-					{
-						string token = await GetWebsocketToken();
-
-						await _socket.SendMessageAsync(
-											new
-											{
-												@event = "subscribe",
-												subscription = new { name = "openOrders", token = token }
-											}
-									);
 					}
+
+					await Task.CompletedTask;
+				},
+				connectCallback: async (_socket) =>
+				{
+					string token = await GetWebsocketToken();
+
+					await _socket.SendMessageAsync(
+						new
+						{
+							@event = "subscribe",
+							subscription = new { name = "openOrders", token = token }
+						}
+					);
+				}
 			);
 		}
 
