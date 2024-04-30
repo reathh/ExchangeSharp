@@ -1143,7 +1143,8 @@ namespace ExchangeSharp
 			JToken token = await MakeJsonRequestAsync<JToken>(
 					"/0/private/GetWebSocketsToken",
 					null,
-					payload
+					payload,
+					"POST"
 			);
 
 			return token["token"].ToString();
@@ -1272,9 +1273,7 @@ namespace ExchangeSharp
 			);
 		}
 
-		protected override async Task<IWebSocket> OnGetPositionsWebSocketAsync(
-				Action<ExchangePosition> callback
-		)
+		protected override async Task<IWebSocket> OnGetOrderDetailsWebSocketAsync(Action<ExchangeOrderResult> callback)
 		{
 			// @see: https://docs.kraken.com/websockets/#message-openOrders
 			return await ConnectPrivateWebSocketAsync(
@@ -1287,9 +1286,16 @@ namespace ExchangeSharp
 							{
 								foreach (JToken element in token[0])
 								{
-									if (element is JObject position)
+									if (element is JObject order)
 									{
-										callback(ParsePosition(element));
+										foreach (JProperty property in order.Properties())
+										{
+											string orderId = property.Name;
+
+											JToken body = property.Value;
+
+											callback(ParseOrder(orderId, body));
+										}
 									}
 								}
 							}
