@@ -10,13 +10,17 @@ using var api = await ExchangeAPI.GetExchangeAPIAsync<ExchangeKrakenAPI>();
 api.PublicApiKey = publicKey.ToSecureString();
 api.PrivateApiKey = privateKey.ToSecureString();
 
-var socket = await api.GetOrderDetailsListWebSocketAsync(orders =>
-{
-	var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
+// var socket = await api.GetOrderDetailsListWebSocketAsync(orders =>
+// {
+// 	var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
+//
+// 	Console.WriteLine(json);
+// });
+//
+// Console.WriteLine("Press any key to exit");
+//
+// Console.ReadKey();
 
-	Console.WriteLine(json);
-});
+var order = await api.GetOrderDetailsAsync("OYZBI5-GRVMD-KIFZRQ");
 
-Console.WriteLine("Press any key to exit");
-
-Console.ReadKey();
+var a =5;

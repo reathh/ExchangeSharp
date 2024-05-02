@@ -1050,7 +1050,8 @@ namespace ExchangeSharp
 			JToken result = await MakeJsonRequestAsync<JToken>(
 					"/0/private/QueryOrders",
 					null,
-					payload
+					payload,
+					"POST"
 			);
 			ExchangeOrderResult orderResult = new ExchangeOrderResult { OrderId = orderId };
 			if (result == null || result[orderId] == null)
