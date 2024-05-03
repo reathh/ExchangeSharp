@@ -245,46 +245,103 @@ namespace ExchangeSharp
 		{
 			ExchangeOrderResult orderResult = new ExchangeOrderResult { OrderId = orderId };
 
-			orderResult.Message = (orderResult.Message ?? order["reason"].ToStringInvariant());
-			orderResult.OrderDate = CryptoUtility.UnixTimeStampToDateTimeSeconds(
-					order["opentm"].ConvertInvariant<double>()
-			);
-			orderResult.MarketSymbol = order["descr"]["pair"].ToStringInvariant();
-			orderResult.IsBuy = (order["descr"]["type"].ToStringInvariant() == "buy");
-			orderResult.Amount = order["vol"].ConvertInvariant<decimal>();
-			orderResult.AmountFilled = order["vol_exec"].ConvertInvariant<decimal>();
-			orderResult.Price = order["descr"]["price"].ConvertInvariant<decimal>();
-			orderResult.AveragePrice = order["price"].ConvertInvariant<decimal>();
-			orderResult.Fees = order["fee"].ConvertInvariant<decimal>();
+			orderResult.Message = (orderResult.Message ?? order["reason"]?.ToStringInvariant());
 
-			switch (order["status"].ToStringInvariant())
+			var openTime = order["opentm"]?.ConvertInvariant<double>().UnixTimeStampToDateTimeSeconds();
+
+			if (openTime != null)
 			{
-				case "pending":
-					orderResult.Result = ExchangeAPIOrderResult.PendingOpen;
-					break;
+				orderResult.OrderDate = openTime.Value;
+			}
 
-				case "open":
-					orderResult.Result = ExchangeAPIOrderResult.Open;
-					break;
+			var marketSymbol = order["descr"]?["pair"]?.ToStringInvariant();
 
-				case "closed":
-					orderResult.Result = ExchangeAPIOrderResult.Filled;
-					break;
+			if (marketSymbol != null)
+			{
+				orderResult.MarketSymbol = marketSymbol;
+			}
 
-				case "canceled":
-					if (orderResult.AmountFilled > 0)
-						orderResult.Result = ExchangeAPIOrderResult.FilledPartiallyAndCancelled;
-					else
-						orderResult.Result = ExchangeAPIOrderResult.Canceled;
-					break;
+			var isBuy = order["descr"]?["type"]?.ToStringInvariant();
 
-				case "expired":
-					orderResult.Result = ExchangeAPIOrderResult.Expired;
-					break;
+			if (isBuy != null)
+			{
+				orderResult.IsBuy = isBuy == "buy";
+			}
 
-				default:
-					orderResult.Result = ExchangeAPIOrderResult.Rejected;
-					break;
+			var amount = order["vol"]?.ConvertInvariant<decimal>();
+
+			if (amount != null)
+			{
+				orderResult.Amount = amount.Value;
+			}
+
+			var amountFilled = order["vol_exec"]?.ConvertInvariant<decimal>();
+
+			if (amountFilled != null)
+			{
+				orderResult.AmountFilled = amountFilled.Value;
+			}
+
+			var price = order["descr"]?["price"]?.ConvertInvariant<decimal>();
+
+			if (price != null)
+			{
+				orderResult.Price = price.Value;
+			}
+
+			var averagePrice = order["price"]?.ConvertInvariant<decimal>();
+
+			if (averagePrice != null)
+			{
+				orderResult.AveragePrice = averagePrice.Value;
+			}
+
+			var fees = order["fee"]?.ConvertInvariant<decimal>();
+
+			if (fees != null)
+			{
+				orderResult.Fees = fees.Value;
+			}
+
+			var status = order["status"]?.ToStringInvariant();
+
+			if (status != null)
+			{
+				switch (status)
+				{
+					case "pending":
+						orderResult.Result = ExchangeAPIOrderResult.PendingOpen;
+
+						break;
+
+					case "open":
+						orderResult.Result = ExchangeAPIOrderResult.Open;
+
+						break;
+
+					case "closed":
+						orderResult.Result = ExchangeAPIOrderResult.Filled;
+
+						break;
+
+					case "canceled":
+						if (orderResult.AmountFilled > 0)
+							orderResult.Result = ExchangeAPIOrderResult.FilledPartiallyAndCancelled;
+						else
+							orderResult.Result = ExchangeAPIOrderResult.Canceled;
+
+						break;
+
+					case "expired":
+						orderResult.Result = ExchangeAPIOrderResult.Expired;
+
+						break;
+
+					default:
+						orderResult.Result = ExchangeAPIOrderResult.Rejected;
+
+						break;
+				}
 			}
 
 			return orderResult;
@@ -1291,6 +1348,8 @@ namespace ExchangeSharp
 					{
 						if (token.Count == 3 && token[1].ToString() == "openOrders")
 						{
+							Console.WriteLine("token");
+							Console.WriteLine(token.ToString());
 							var orderList = new List<ExchangeOrderResult>();
 
 							foreach (JToken element in token[0])
