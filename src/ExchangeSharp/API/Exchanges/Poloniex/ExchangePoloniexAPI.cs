@@ -137,7 +137,7 @@ namespace ExchangeSharp
 			order.Fees = CalculateFees(
 					order.Amount,
 					order.Price.Value,
-					order.IsBuy,
+					order.IsBuy.Value,
 					result["fee"].ConvertInvariant<decimal>()
 			);
 
@@ -165,7 +165,7 @@ namespace ExchangeSharp
 
 					if (!string.IsNullOrWhiteSpace(order.MarketSymbol))
 					{
-						order.FeesCurrency = ParseFeesCurrency(order.IsBuy, order.MarketSymbol);
+						order.FeesCurrency = ParseFeesCurrency(order.IsBuy.Value, order.MarketSymbol);
 					}
 
 					orderMetadataSet = true;
@@ -198,7 +198,7 @@ namespace ExchangeSharp
 				order.Fees += CalculateFees(
 						tradeAmt,
 						tradeRate,
-						order.IsBuy,
+						order.IsBuy.Value,
 						trade["fee"].ConvertInvariant<decimal>()
 				);
 			}

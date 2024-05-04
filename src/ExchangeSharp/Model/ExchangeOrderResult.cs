@@ -37,7 +37,7 @@ namespace ExchangeSharp
 		public string ResultCode { get; set; }
 
 		/// <summary>Message if any</summary>
-		public string Message { get; set; }
+		public string? Message { get; set; }
 
 		/// <summary>
 		/// Original order amount in the market currency.
@@ -77,10 +77,10 @@ namespace ExchangeSharp
 		public DateTime? CompletedDate { get; set; }
 
 		/// <summary>Market Symbol. E.g. ADA/ETH</summary>
-		public string MarketSymbol { get; set; }
+		public string? MarketSymbol { get; set; }
 
 		/// <summary>Whether the order is a buy or sell</summary>
-		public bool IsBuy { get; set; }
+		public bool? IsBuy { get; set; }
 
 		/// <summary>The fees on the order (not a percent). Note, that if this is a trade (TradeId is not null),
 		/// this represents only the fees on this particular trade/fill, not the cumulative amount in the order.
@@ -141,7 +141,7 @@ namespace ExchangeSharp
 		/// <returns>A string that represents this instance.</returns>
 		public override string ToString()
 		{
-			return $"[{OrderDate}], {(IsBuy ? "Buy" : "Sell")} {AmountFilled} of {Amount} {MarketSymbol} {Result} at {AveragePrice}, fees paid {Fees} {FeesCurrency}";
+			return $"[{OrderDate}], {(IsBuy != null && IsBuy.Value ? "Buy" : "Sell")} {AmountFilled} of {Amount} {MarketSymbol} {Result} at {AveragePrice}, fees paid {Fees} {FeesCurrency}";
 		}
 	}
 }

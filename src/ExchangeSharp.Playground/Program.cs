@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using ExchangeSharp;
+﻿using ExchangeSharp;
 using Newtonsoft.Json;
 
 var publicKey = "r0PKnX6CfxaVlvCJ/JFOlYzRozG/rV0GkOK5lWBo/gL7XRNkvNzDOMtQ";
@@ -14,6 +13,7 @@ api.PrivateApiKey = privateKey.ToSecureString();
 // {
 // 	var json = JsonConvert.SerializeObject(orders, Formatting.Indented);
 //
+// 	Console.WriteLine("Received Orders");
 // 	Console.WriteLine(json);
 // });
 //
@@ -21,6 +21,7 @@ api.PrivateApiKey = privateKey.ToSecureString();
 //
 // Console.ReadKey();
 
-var order = await api.GetOrderDetailsAsync("OYZBI5-GRVMD-KIFZRQ");
 
-var a =5;
+var order = await api.GetOrderDetailsAsync("ON7M2L-PCKHC-C7EKI4");
+
+var a = 5;

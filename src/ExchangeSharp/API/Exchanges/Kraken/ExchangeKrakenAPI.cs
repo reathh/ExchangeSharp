@@ -245,7 +245,7 @@ namespace ExchangeSharp
 		{
 			ExchangeOrderResult orderResult = new ExchangeOrderResult { OrderId = orderId };
 
-			orderResult.Message = (orderResult.Message ?? order["reason"]?.ToStringInvariant());
+			orderResult.Message = order["cancel_reason"]?.ToStringInvariant();
 
 			var openTime = order["opentm"]?.ConvertInvariant<double>().UnixTimeStampToDateTimeSeconds();
 
@@ -289,11 +289,25 @@ namespace ExchangeSharp
 				orderResult.Price = price.Value;
 			}
 
-			var averagePrice = order["price"]?.ConvertInvariant<decimal>();
+			var averagePrice = order["avg_price"]?.ConvertInvariant<decimal>();
 
 			if (averagePrice != null)
 			{
 				orderResult.AveragePrice = averagePrice.Value;
+			}
+			else
+			{
+				var orderType = order["descr"]?["ordertype"]?.ToStringInvariant();
+
+				if (orderType == "trailing-stop-limit")
+				{
+					var trailingStopAveragePrice = order["price"]?.ConvertInvariant<decimal>();
+
+					if (trailingStopAveragePrice != null)
+					{
+						orderResult.AveragePrice = trailingStopAveragePrice.Value;
+					}
+				}
 			}
 
 			var fees = order["fee"]?.ConvertInvariant<decimal>();

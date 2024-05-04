@@ -25,6 +25,7 @@
     <RepositoryType>git</RepositoryType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 	
   <ItemGroup>

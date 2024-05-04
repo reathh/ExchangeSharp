@@ -306,14 +306,14 @@ namespace ExchangeSharpTests
 					"ETH_GAS"
 			);
 			orders.Should().HaveCount(2);
-			ExchangeOrderResult sellorder = orders.Single(x => !x.IsBuy);
+			ExchangeOrderResult sellorder = orders.Single(x => x.IsBuy != null && !x.IsBuy.Value);
 			sellorder.AveragePrice.Should().Be(0.04123m);
 			sellorder.AmountFilled.Should().Be(9.71293428m);
 			sellorder.FeesCurrency.Should().Be("ETH");
 			sellorder.Fees.Should().Be(0.0006007m);
 			sellorder.Result.Should().Be(ExchangeAPIOrderResult.Filled);
 
-			ExchangeOrderResult buyOrder = orders.Single(x => x.IsBuy);
+			ExchangeOrderResult buyOrder = orders.Single(x => x.IsBuy != null && x.IsBuy.Value);
 			buyOrder.AveragePrice.Should().Be(0.0397199908083616777777777778m);
 			buyOrder.AmountFilled.Should().Be(18);
 			buyOrder.FeesCurrency.Should().Be("GAS");

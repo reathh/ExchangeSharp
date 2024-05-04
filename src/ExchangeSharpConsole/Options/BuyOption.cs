@@ -96,7 +96,7 @@ namespace ExchangeSharpConsole.Options
 			Console.WriteLine($"Trade Id:			{orderResult.TradeId}");
 			Console.WriteLine($"Order Date:			{orderResult.OrderDate:R}");
 			Console.WriteLine($"Completed Date:     {orderResult.CompletedDate:R}");
-			Console.WriteLine($"Side:				{(orderResult.IsBuy ? "Bid" : "Ask")}");
+			Console.WriteLine($"Side:				{(orderResult.IsBuy != null && orderResult.IsBuy.Value ? "Bid" : "Ask")}");
 			Console.WriteLine($"Market symbol:		{orderResult.MarketSymbol}");
 			Console.WriteLine($"Status:				{orderResult.Result}");
 			Console.WriteLine($"Price:				{orderResult.Price:N}");
