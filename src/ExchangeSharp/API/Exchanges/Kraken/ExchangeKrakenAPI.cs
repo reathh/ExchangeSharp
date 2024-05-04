@@ -282,11 +282,19 @@ namespace ExchangeSharp
 				orderResult.AmountFilled = amountFilled.Value;
 			}
 
-			var price = order["descr"]?["price"]?.ConvertInvariant<decimal>();
+			var limitPrice = order["limitprice"]?.ConvertInvariant<decimal>();
 
-			if (price != null)
+			if (limitPrice > 0)
 			{
-				orderResult.Price = price.Value;
+				orderResult.Price = limitPrice.Value;
+			} else {
+				var price = order["descr"]?["price"]?.ConvertInvariant<decimal>();
+
+				if (price != null)
+				{
+					orderResult.Price = price.Value;
+				}
+
 			}
 
 			var averagePrice = order["avg_price"]?.ConvertInvariant<decimal>();
@@ -295,20 +303,8 @@ namespace ExchangeSharp
 			{
 				orderResult.AveragePrice = averagePrice.Value;
 			}
-			else
-			{
-				var orderType = order["descr"]?["ordertype"]?.ToStringInvariant();
 
-				if (orderType == "trailing-stop-limit")
-				{
-					var trailingStopAveragePrice = order["price"]?.ConvertInvariant<decimal>();
 
-					if (trailingStopAveragePrice != null)
-					{
-						orderResult.AveragePrice = trailingStopAveragePrice.Value;
-					}
-				}
-			}
 
 			var fees = order["fee"]?.ConvertInvariant<decimal>();
 
