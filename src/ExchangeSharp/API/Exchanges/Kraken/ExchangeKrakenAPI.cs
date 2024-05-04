@@ -282,29 +282,12 @@ namespace ExchangeSharp
 				orderResult.AmountFilled = amountFilled.Value;
 			}
 
-			var limitPrice = order["limitprice"]?.ConvertInvariant<decimal>();
-
-			if (limitPrice > 0)
-			{
-				orderResult.Price = limitPrice.Value;
-			} else {
-				var price = order["descr"]?["price"]?.ConvertInvariant<decimal>();
-
-				if (price != null)
-				{
-					orderResult.Price = price.Value;
-				}
-
-			}
-
 			var averagePrice = order["avg_price"]?.ConvertInvariant<decimal>();
 
 			if (averagePrice != null)
 			{
 				orderResult.AveragePrice = averagePrice.Value;
 			}
-
-
 
 			var fees = order["fee"]?.ConvertInvariant<decimal>();
 
@@ -314,6 +297,13 @@ namespace ExchangeSharp
 			}
 
 			var status = order["status"]?.ToStringInvariant();
+
+			var price = order["descr"]?["price"]?.ConvertInvariant<decimal>();
+
+			if (price != null && status?.Contains("pending") == false)
+			{
+				orderResult.Price = price.Value;
+			}
 
 			if (status != null)
 			{
