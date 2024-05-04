@@ -298,14 +298,24 @@ namespace ExchangeSharp
 
 			var status = order["status"]?.ToStringInvariant();
 
-			var price = order["descr"]?["price"]?.ConvertInvariant<decimal>();
+				var stopPrice = order["stopprice"]?.ConvertInvariant<decimal>();
 
-			if (price != null && status?.Contains("pending") == false)
-			{
-				orderResult.Price = price.Value;
-			}
+				if (stopPrice > 0)
+				{
+					orderResult.Price = stopPrice.Value;
+				}
+				else
+				{
+					var price = order["descr"]?["price"]
+						?.ConvertInvariant<decimal>();
 
-			if (status != null)
+					if (price != null)
+					{
+						orderResult.Price = price.Value;
+					}
+				}
+
+				if (status != null)
 			{
 				switch (status)
 				{
@@ -1084,7 +1094,7 @@ namespace ExchangeSharp
 
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
-				string marketSymbol = null,
+				string marketSymbol = null!,
 				bool isClientOrderId = false
 		)
 		{
@@ -1356,9 +1366,18 @@ namespace ExchangeSharp
 							{
 								if (element is JObject jObject)
 								{
-
 									foreach (JProperty property in jObject.Properties())
 									{
+										if (property.Value["flags"]?.ToStringInvariant() == "stopped")
+										{
+											continue;
+										}
+
+										if (property.Value.Count() == 2 && property.Value["status"]?.ToStringInvariant() == "open" && property.Value["userref"] != null)
+										{
+											continue;
+										}
+
 										string orderId = property.Name;
 
 										JToken body = property.Value;
