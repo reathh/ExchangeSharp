@@ -1194,7 +1194,7 @@ namespace ExchangeSharp
 								{ "txid", orderId },
 								{ "nonce", nonce }
 						};
-			await MakeJsonRequestAsync<JToken>("/0/private/CancelOrder", null, payload);
+			await MakeJsonRequestAsync<JToken>("/0/private/CancelOrder", null, payload, "POST");
 		}
 
 		private async Task<string> GetWebsocketToken()
