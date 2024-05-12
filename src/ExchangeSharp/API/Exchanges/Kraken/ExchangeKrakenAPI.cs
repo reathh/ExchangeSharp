@@ -298,24 +298,7 @@ namespace ExchangeSharp
 
 			var status = order["status"]?.ToStringInvariant();
 
-				var stopPrice = order["stopprice"]?.ConvertInvariant<decimal>();
-
-				if (stopPrice > 0)
-				{
-					orderResult.Price = stopPrice.Value;
-				}
-				else
-				{
-					var price = order["descr"]?["price"]
-						?.ConvertInvariant<decimal>();
-
-					if (price != null)
-					{
-						orderResult.Price = price.Value;
-					}
-				}
-
-				if (status != null)
+			if (status != null)
 			{
 				switch (status)
 				{
@@ -353,6 +336,29 @@ namespace ExchangeSharp
 						break;
 				}
 			}
+
+			if (orderResult.Result == ExchangeAPIOrderResult.Filled && order["price"] != null && order["avg_price"] == null)
+			{
+				orderResult.AveragePrice = order["price"].ConvertInvariant<decimal>();
+			} else {
+				var stopPrice = order["stopprice"]?.ConvertInvariant<decimal>();
+
+				if (stopPrice > 0)
+				{
+					orderResult.Price = stopPrice.Value;
+				}
+				else
+				{
+					var price = order["descr"]?["price"]
+						?.ConvertInvariant<decimal>();
+
+					if (price != null)
+					{
+						orderResult.Price = price.Value;
+					}
+				}
+			}
+
 
 			return orderResult;
 		}

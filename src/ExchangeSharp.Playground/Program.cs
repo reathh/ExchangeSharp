@@ -22,6 +22,6 @@ api.PrivateApiKey = privateKey.ToSecureString();
 // Console.ReadKey();
 
 
-var order = await api.GetOrderDetailsAsync("ON7M2L-PCKHC-C7EKI4");
+var order = await api.GetOrderDetailsAsync("OSOADS-QHPNS-TQMNON");
 
 var a = 5;
