@@ -243,60 +243,73 @@ namespace ExchangeSharp
 
 		private ExchangeOrderResult ParseOrder(string orderId, JToken order)
 		{
-			ExchangeOrderResult orderResult = new ExchangeOrderResult { OrderId = orderId };
+			ExchangeOrderResult orderResult = new ExchangeOrderResult
+			{
+				OrderId = orderId
+			};
 
-			orderResult.Message = order["cancel_reason"]?.ToStringInvariant();
+			orderResult.Message = order["cancel_reason"]
+				?.ToStringInvariant();
 
-			var openTime = order["opentm"]?.ConvertInvariant<double>().UnixTimeStampToDateTimeSeconds();
+			var openTime = order["opentm"]
+				?.ConvertInvariant<double>()
+				.UnixTimeStampToDateTimeSeconds();
 
 			if (openTime != null)
 			{
 				orderResult.OrderDate = openTime.Value;
 			}
 
-			var marketSymbol = order["descr"]?["pair"]?.ToStringInvariant();
+			var marketSymbol = order["descr"]?["pair"]
+				?.ToStringInvariant();
 
 			if (marketSymbol != null)
 			{
 				orderResult.MarketSymbol = marketSymbol;
 			}
 
-			var isBuy = order["descr"]?["type"]?.ToStringInvariant();
+			var isBuy = order["descr"]?["type"]
+				?.ToStringInvariant();
 
 			if (isBuy != null)
 			{
 				orderResult.IsBuy = isBuy == "buy";
 			}
 
-			var amount = order["vol"]?.ConvertInvariant<decimal>();
+			var amount = order["vol"]
+				?.ConvertInvariant<decimal>();
 
 			if (amount != null)
 			{
 				orderResult.Amount = amount.Value;
 			}
 
-			var amountFilled = order["vol_exec"]?.ConvertInvariant<decimal>();
+			var amountFilled = order["vol_exec"]
+				?.ConvertInvariant<decimal>();
 
 			if (amountFilled != null)
 			{
 				orderResult.AmountFilled = amountFilled.Value;
 			}
 
-			var averagePrice = order["avg_price"]?.ConvertInvariant<decimal>();
+			var averagePrice = order["avg_price"]
+				?.ConvertInvariant<decimal>();
 
 			if (averagePrice != null)
 			{
 				orderResult.AveragePrice = averagePrice.Value;
 			}
 
-			var fees = order["fee"]?.ConvertInvariant<decimal>();
+			var fees = order["fee"]
+				?.ConvertInvariant<decimal>();
 
 			if (fees != null)
 			{
 				orderResult.Fees = fees.Value;
 			}
 
-			var status = order["status"]?.ToStringInvariant();
+			var status = order["status"]
+				?.ToStringInvariant();
 
 			if (status != null)
 			{
@@ -339,9 +352,29 @@ namespace ExchangeSharp
 
 			if (orderResult.Result == ExchangeAPIOrderResult.Filled && order["price"] != null && order["avg_price"] == null)
 			{
-				orderResult.AveragePrice = order["price"].ConvertInvariant<decimal>();
-			} else {
-				var stopPrice = order["stopprice"]?.ConvertInvariant<decimal>();
+				orderResult.AveragePrice = order["price"]?
+					.ConvertInvariant<decimal>();
+			}
+
+			var trailingStopToLimitRegex = new Regex($@"trailing stop (\d+\.\d+) -\u003e limit (\d+\.\d+)");
+
+			var orderDescription = order["descr"]?["order"]
+				?.ToStringInvariant();
+
+			if (!string.IsNullOrEmpty(orderDescription) && trailingStopToLimitRegex.IsMatch(orderDescription))
+			{
+				var price = order["descr"]?["price"]
+					?.ConvertInvariant<decimal>();
+
+				if (price != null)
+				{
+					orderResult.Price = price.Value;
+				}
+			}
+			else
+			{
+				var stopPrice = order["stopprice"]
+					?.ConvertInvariant<decimal>();
 
 				if (stopPrice > 0)
 				{
@@ -355,6 +388,7 @@ namespace ExchangeSharp
 					if (price != null)
 					{
 						orderResult.Price = price.Value;
+
 					}
 				}
 			}
