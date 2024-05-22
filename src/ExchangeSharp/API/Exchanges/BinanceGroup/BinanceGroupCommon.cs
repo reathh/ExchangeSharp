@@ -898,7 +898,8 @@ namespace ExchangeSharp.BinanceGroup
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string? marketSymbol = null,
-				bool isClientOrderId = false
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{
 			Dictionary<string, object> payload = await GetNoncePayloadAsync();
@@ -1519,9 +1520,10 @@ namespace ExchangeSharp.BinanceGroup
 			return transactions;
 		}
 
-		protected override async Task<IWebSocket> OnUserDataWebSocketAsync(Action<object> callback)
+		protected override async Task<IWebSocket> OnUserDataWebSocketAsync(Action<object> callback, bool margin = false)
 		{
-			var listenKey = await GetListenKeyAsync();
+			var listenKey = await GetListenKeyAsync(margin);
+
 			return await ConnectPublicWebSocketAsync(
 					$"/ws/{listenKey}",
 					(_socket, msg) =>
@@ -1680,11 +1682,13 @@ namespace ExchangeSharp.BinanceGroup
 			);
 		}
 
-		public async Task<string> GetListenKeyAsync()
+		public async Task<string> GetListenKeyAsync(bool margin = false)
 		{
+			var  baseUrl = margin ? BaseUrlSApi : BaseUrlApi;
+
 			JToken response = await MakeJsonRequestAsync<JToken>(
 					"/userDataStream",
-					BaseUrlApi,
+					baseUrl,
 					null,
 					"POST"
 			);

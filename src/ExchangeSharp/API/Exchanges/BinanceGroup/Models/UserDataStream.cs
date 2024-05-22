@@ -58,7 +58,7 @@ namespace ExchangeSharp.BinanceGroup
 		public string OrderRejectReason { get; set; }
 
 		[JsonProperty("i")]
-		public int OrderId { get; set; }
+		public long OrderId { get; set; }
 
 		[JsonProperty("l")]
 		public decimal LastExecutedQuantity { get; set; }

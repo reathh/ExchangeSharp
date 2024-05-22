@@ -26,10 +26,10 @@
 //
 // var a = 5;
 
-
 // place binance margin order
 
 using ExchangeSharp;
+using Newtonsoft.Json;
 
 var binance = await ExchangeAPI.GetExchangeAPIAsync<ExchangeBinanceAPI>();
 
@@ -38,16 +38,30 @@ var privateKey = "9xt33mBKQlVrCgylCoTaScxRlwMORbDYQz9guo0UDeAkUxy5pjR3RQzZqhjVD1
 
 binance.LoadAPIKeysUnsecure(publicKey, privateKey);
 
-// get price for BTC FDUSD
-var price = await binance.GetTickerAsync("BTCFDUSD");
+using var conn = await binance.GetUserDataWebSocketAsync(data =>
+{
+	Console.WriteLine("aaaa");
+	Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
+	var a = 5;
+}, margin: true);
 
-// var order = await binance.PlaceOrderAsync(new ExchangeOrderRequest
-// {
-// 		Amount = 0.0001m,
-// 		IsBuy = true,
-// 		Price = 0.1m,
-// 		MarketSymbol = "BTC",
-// 		OrderType = ExchangeSharp.OrderType.Limit
-// });
+Console.WriteLine("Press any key to exit");
+
+Console.ReadKey();
 //
-var a = 5;
+// using Binance.Net.Clients;
+// using CryptoExchange.Net.Authentication;
+// using Newtonsoft.Json;
+//
+// var publicKey = "YtGvdt6kHwxmISno2xu9rSfn1QqqT8AsalaAV0wQoTsBY6yn2Jciv4igcqH5KlNf";
+// var privateKey = "9xt33mBKQlVrCgylCoTaScxRlwMORbDYQz9guo0UDeAkUxy5pjR3RQzZqhjVD10q";
+//
+// var credentials = new ApiCredentials(publicKey, privateKey);
+//
+// var binanceSocketClient = new BinanceSocketClient(options => options.ApiCredentials = credentials);
+//
+// var listenKey = await binanceSocketClient.SpotApi.Account.StartUserStreamAsync();
+//
+// var tickerUpdatesSocket = await binanceSocketClient.SpotApi.Account.SubscribeToUserDataUpdatesAsync(listenKey.Data.Result,
+// 	data => { Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented)); });
+//

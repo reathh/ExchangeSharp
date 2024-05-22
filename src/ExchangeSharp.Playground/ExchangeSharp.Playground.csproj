@@ -11,4 +11,8 @@
       <ProjectReference Include="..\ExchangeSharp\ExchangeSharp.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Binance.Net" Version="9.9.7" />
+    </ItemGroup>
+
 </Project>
