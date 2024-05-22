@@ -1538,9 +1538,6 @@ namespace ExchangeSharp.BinanceGroup
 					{
 						JToken token = JToken.Parse(msg.ToStringFromUTF8());
 
-						Console.WriteLine("token");
-						Console.WriteLine(JsonConvert.SerializeObject(token, Formatting.Indented));
-
 						var eventType = token["e"].ToStringInvariant();
 
 						var serializerOptions = new JsonSerializerOptions
