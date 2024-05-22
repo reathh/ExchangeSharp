@@ -1424,7 +1424,7 @@ namespace ExchangeSharp
 		{
 			callback.ThrowIfNull(nameof(callback), "Callback must not be null");
 
-			return OnUserDataWebSocketAsync(callback);
+			return OnUserDataWebSocketAsync(callback, margin);
 		}
 
 		#endregion Web Socket API

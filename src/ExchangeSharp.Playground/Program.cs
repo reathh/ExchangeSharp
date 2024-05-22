@@ -38,16 +38,16 @@ var privateKey = "9xt33mBKQlVrCgylCoTaScxRlwMORbDYQz9guo0UDeAkUxy5pjR3RQzZqhjVD1
 
 binance.LoadAPIKeysUnsecure(publicKey, privateKey);
 
-// using var conn = await binance.GetUserDataWebSocketAsync(data =>
-// {
-// 	Console.WriteLine("aaaa");
-// 	Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
-// 	var a = 5;
-// }, margin: true);
-//
-// Console.WriteLine("Press any key to exit");
-//
-// Console.ReadKey();
+using var conn = await binance.GetUserDataWebSocketAsync(data =>
+{
+	Console.WriteLine("aaaa");
+	Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
+	var a = 5;
+}, margin: true);
+
+Console.WriteLine("Press any key to exit");
+
+Console.ReadKey();
 
 // // get info for order 6025049497
 
