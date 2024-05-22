@@ -898,7 +898,8 @@ namespace ExchangeSharp.BinanceGroup
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string? marketSymbol = null,
-				bool isClientOrderId = false
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{
 			Dictionary<string, object> payload = await GetNoncePayloadAsync();
@@ -915,7 +916,11 @@ namespace ExchangeSharp.BinanceGroup
 			else
 				payload["orderId"] = orderId;
 
-			JToken token = await MakeJsonRequestAsync<JToken>("/order", BaseUrlApi, payload);
+			var baseUrl = margin ? BaseUrlSApi : BaseUrlApi;
+
+			var url = margin ? "/margin/order" : "/order";
+
+			JToken token = await MakeJsonRequestAsync<JToken>(url, baseUrl, payload);
 			ExchangeOrderResult result = ParseOrder(token);
 
 			// Add up the fees from each trade in the order

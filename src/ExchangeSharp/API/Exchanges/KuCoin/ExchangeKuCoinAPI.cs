@@ -371,7 +371,7 @@ namespace ExchangeSharp
 								{ "symbol", marketSymbol },
 								{ "type", periodString }
             };
-			
+
 			if (startDate != null)
 			{
 				payload.Add("startAt", (long)startDate.Value.UnixTimestampFromDateTimeSeconds());
@@ -496,7 +496,8 @@ namespace ExchangeSharp
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string marketSymbol = null,
-				bool isClientOrderId = false
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{
 			var payload = await GetNoncePayloadAsync();

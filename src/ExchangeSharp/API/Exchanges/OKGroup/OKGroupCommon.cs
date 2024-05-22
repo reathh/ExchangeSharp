@@ -592,7 +592,8 @@ namespace ExchangeSharp.OKGroup
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string marketSymbol = null,
-				bool isClientOrderId = false
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{
 			List<ExchangeOrderResult> orders = new List<ExchangeOrderResult>();

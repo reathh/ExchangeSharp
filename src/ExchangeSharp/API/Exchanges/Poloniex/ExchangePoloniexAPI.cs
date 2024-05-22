@@ -809,7 +809,8 @@ namespace ExchangeSharp
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string marketSymbol = null,
-				bool isClientOrderId = false
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{
 			var result = await MakeJsonRequestAsync<JToken>(

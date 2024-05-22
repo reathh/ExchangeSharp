@@ -230,12 +230,9 @@ namespace ExchangeSharp
 		/// <param name="orderId">order id to search for (either server assigned id or client provided id</param>
 		/// <param name="marketSymbol">Market Symbol</param>
 		/// <param name="isClientOrderId">Whether the order id parameter is the server assigned id or client provided id</param>
+		/// <param name="margin"></param>
 		/// <returns>Order details</returns>
-		Task<ExchangeOrderResult> GetOrderDetailsAsync(
-				string orderId,
-				string? marketSymbol = null,
-				bool isClientOrderId = false
-		);
+		Task<ExchangeOrderResult> GetOrderDetailsAsync(string orderId, string? marketSymbol = null, bool isClientOrderId = false, bool margin = false);
 
 		/// <summary>
 		/// Get the details of all open orders

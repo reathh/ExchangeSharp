@@ -38,17 +38,22 @@ var privateKey = "9xt33mBKQlVrCgylCoTaScxRlwMORbDYQz9guo0UDeAkUxy5pjR3RQzZqhjVD1
 
 binance.LoadAPIKeysUnsecure(publicKey, privateKey);
 
-using var conn = await binance.GetUserDataWebSocketAsync(data =>
-{
-	Console.WriteLine("aaaa");
-	Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
-	var a = 5;
-}, margin: true);
-
-Console.WriteLine("Press any key to exit");
-
-Console.ReadKey();
+// using var conn = await binance.GetUserDataWebSocketAsync(data =>
+// {
+// 	Console.WriteLine("aaaa");
+// 	Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
+// 	var a = 5;
+// }, margin: true);
 //
+// Console.WriteLine("Press any key to exit");
+//
+// Console.ReadKey();
+
+// // get info for order 6025049497
+
+var order = await binance.GetOrderDetailsAsync("6025049497", marketSymbol: "BTCFDUSD", margin: true);
+
+var a = 5;
 // using Binance.Net.Clients;
 // using CryptoExchange.Net.Authentication;
 // using Newtonsoft.Json;
@@ -58,10 +63,17 @@ Console.ReadKey();
 //
 // var credentials = new ApiCredentials(publicKey, privateKey);
 //
-// var binanceSocketClient = new BinanceSocketClient(options => options.ApiCredentials = credentials);
+// // var binanceSocketClient = new BinanceSocketClient(options => options.ApiCredentials = credentials);
+// //
+// // var listenKey = await binanceSocketClient.SpotApi.Account.StartUserStreamAsync();
+// //
+// // var tickerUpdatesSocket = await binanceSocketClient.SpotApi.Account.SubscribeToUserDataUpdatesAsync(listenKey.Data.Result,
+// // 	data => { Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented)); });
 //
-// var listenKey = await binanceSocketClient.SpotApi.Account.StartUserStreamAsync();
+// var binanceRestClient = new BinanceRestClient(options => options.ApiCredentials = credentials);
 //
-// var tickerUpdatesSocket = await binanceSocketClient.SpotApi.Account.SubscribeToUserDataUpdatesAsync(listenKey.Data.Result,
-// 	data => { Console.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented)); });
+// // get info for order 6025049497
 //
+// var order = await binanceRestClient.SpotApi.Account.
+//
+// var a = 5;

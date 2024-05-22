@@ -355,8 +355,9 @@ namespace ExchangeSharp
 
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
-				string marketSymbol,
-				bool isClientOrderId = false
+				string marketSymbol = null,
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{
 			if (string.IsNullOrEmpty(marketSymbol))

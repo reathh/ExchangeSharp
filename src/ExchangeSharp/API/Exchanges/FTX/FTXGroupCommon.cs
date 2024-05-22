@@ -373,7 +373,8 @@ namespace ExchangeSharp
 		protected async override Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string marketSymbol = null,
-				bool isClientOrderId = false
+				bool isClientOrderId = false,
+				bool margin = false
 		)
 		{ // https://docs.ftx.com/#get-order-status and https://docs.ftx.com/#get-order-status-by-client-id
 			if (!string.IsNullOrEmpty(marketSymbol))
