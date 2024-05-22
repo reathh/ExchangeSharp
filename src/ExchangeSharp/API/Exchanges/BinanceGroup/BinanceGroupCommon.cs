@@ -15,11 +15,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExchangeSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ExchangeSharp.BinanceGroup
 {
+	using System.Text.Json;
+	using System.Text.Json.Serialization;
+
 	public abstract class BinanceGroupCommon : ExchangeAPI
 	{
 		public virtual string BaseUrlApi => $"{BaseUrl}/api/v3";
@@ -1533,15 +1537,24 @@ namespace ExchangeSharp.BinanceGroup
 					(_socket, msg) =>
 					{
 						JToken token = JToken.Parse(msg.ToStringFromUTF8());
+
+						Console.WriteLine("token");
+						Console.WriteLine(JsonConvert.SerializeObject(token, Formatting.Indented));
+
 						var eventType = token["e"].ToStringInvariant();
+
+						var serializerOptions = new JsonSerializerOptions
+						{
+							PropertyNameCaseInsensitive = false,
+							DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+						};
+
 						switch (eventType)
 						{
 							case "executionReport": // systematically check to make sure we are dealing with expected cases here
-								{
-									var update = JsonConvert.DeserializeObject<ExecutionReport>(
-														token.ToStringInvariant(),
-														SerializerSettings
-												);
+							{
+								var update = JsonSerializer.Deserialize<ExecutionReport>(token.ToStringInvariant(), serializerOptions);
+
 									switch (update.CurrentExecutionType)
 									{
 										case "NEW ": // The order has been accepted into the engine.
@@ -1576,10 +1589,8 @@ namespace ExchangeSharp.BinanceGroup
 											);
 							case "outboundAccountPosition":
 								{
-									var update = JsonConvert.DeserializeObject<OutboundAccount>(
-														token.ToStringInvariant(),
-														SerializerSettings
-												);
+									var update = JsonSerializer.Deserialize<OutboundAccount>(token.ToStringInvariant(), serializerOptions);
+
 									callback(
 														new ExchangeBalances()
 														{
@@ -1610,10 +1621,8 @@ namespace ExchangeSharp.BinanceGroup
 								}
 							case "balanceUpdate":
 								{
-									var update = JsonConvert.DeserializeObject<BalanceUpdate>(
-														token.ToStringInvariant(),
-														SerializerSettings
-												);
+									var update = JsonSerializer.Deserialize<BalanceUpdate>(token.ToStringInvariant(), serializerOptions);
+
 									callback(
 														new ExchangeBalances()
 														{

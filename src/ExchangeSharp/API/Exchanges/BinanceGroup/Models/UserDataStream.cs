@@ -1,104 +1,112 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ExchangeSharp.BinanceGroup
 {
 	internal class ExecutionReport
 	{
-		[JsonProperty("e")]
+		[JsonPropertyName("e")]
 		public string EventType { get; set; }
 
-		[JsonProperty("E")]
+		[JsonPropertyName("E")]
 		public long EventTime { get; set; }
 
-		[JsonProperty("s")]
+		[JsonPropertyName("s")]
 		public string Symbol { get; set; }
 
-		[JsonProperty("c")]
+		[JsonPropertyName("c")]
 		public string ClientOrderId { get; set; }
 
-		[JsonProperty("S")]
+		[JsonPropertyName("S")]
 		public string Side { get; set; }
 
-		[JsonProperty("o")]
+		[JsonPropertyName("o")]
 		public string OrderType { get; set; }
 
-		[JsonProperty("f")]
+		[JsonPropertyName("f")]
 		public string TimeInForce { get; set; }
 
-		[JsonProperty("q")]
+		[JsonPropertyName("q")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal OrderQuantity { get; set; }
 
-		[JsonProperty("p")]
+		[JsonPropertyName("p")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal OrderPrice { get; set; }
 
-		[JsonProperty("P")]
+		[JsonPropertyName("P")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal StopPrice { get; set; }
 
-		[JsonProperty("F")]
+		[JsonPropertyName("F")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal IcebergQuantity { get; set; }
 
-		[JsonProperty("g")]
+		[JsonPropertyName("g")]
 		public int OrderListId { get; set; }
 
-		[JsonProperty("C")]
+		[JsonPropertyName("C")]
 		public string OriginalClientOrderId { get; set; }
 
-		[JsonProperty("x")]
+		[JsonPropertyName("x")]
 		public string CurrentExecutionType { get; set; }
 
-		[JsonProperty("X")]
+		[JsonPropertyName("X")]
 		public string CurrentOrderStatus { get; set; }
 
-		[JsonProperty("r")]
+		[JsonPropertyName("r")]
 		public string OrderRejectReason { get; set; }
 
-		[JsonProperty("i")]
+		[JsonPropertyName("i")]
 		public long OrderId { get; set; }
 
-		[JsonProperty("l")]
+		[JsonPropertyName("l")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal LastExecutedQuantity { get; set; }
 
-		[JsonProperty("z")]
+		[JsonPropertyName("z")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal CumulativeFilledQuantity { get; set; }
 
-		[JsonProperty("L")]
+		[JsonPropertyName("L")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal LastExecutedPrice { get; set; }
 
-		[JsonProperty("n")]
+		[JsonPropertyName("n")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal CommissionAmount { get; set; }
 
-		[JsonProperty("N")]
+		[JsonPropertyName("N")]
 		public string CommissionAsset { get; set; }
 
-		[JsonProperty("T")]
+		[JsonPropertyName("T")]
 		public long TransactionTime { get; set; }
 
-		[JsonProperty("t")]
-		public string TradeId { get; set; }
+		[JsonPropertyName("t")]
+		public long TradeId { get; set; }
 
-		[JsonProperty("w")]
-		public string IsTheOrderWorking { get; set; }
+		[JsonPropertyName("w")]
+		public bool IsTheOrderWorking { get; set; }
 
-		[JsonProperty("m")]
-		public string IsThisTradeTheMakerSide { get; set; }
+		[JsonPropertyName("m")]
+		public bool IsThisTradeTheMakerSide { get; set; }
 
-		[JsonProperty("O")]
+		[JsonPropertyName("O")]
 		public long OrderCreationTime { get; set; }
 
-		[JsonProperty("Z")]
+		[JsonPropertyName("Z")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal CumulativeQuoteAssetTransactedQuantity { get; set; }
 
-		[JsonProperty("Y")]
+		[JsonPropertyName("Y")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal LastQuoteAssetTransactedQuantity { get; set; }
 
 		public override string ToString()
 		{
-			return $"{nameof(Symbol)}: {Symbol}, {nameof(OrderType)}: {OrderType}, {nameof(OrderQuantity)}: {OrderQuantity}, {nameof(OrderPrice)}: {OrderPrice}, {nameof(CurrentOrderStatus)}: {CurrentOrderStatus}, {nameof(OrderId)}: {OrderId}";
+			return
+				$"{nameof(Symbol)}: {Symbol}, {nameof(OrderType)}: {OrderType}, {nameof(OrderQuantity)}: {OrderQuantity}, {nameof(OrderPrice)}: {OrderPrice}, {nameof(CurrentOrderStatus)}: {CurrentOrderStatus}, {nameof(OrderId)}: {OrderId}";
 		}
 
 		/// <summary>
@@ -108,10 +116,8 @@ namespace ExchangeSharp.BinanceGroup
 		{
 			get
 			{
-				var status = BinanceGroupCommon.ParseExchangeAPIOrderResult(
-						status: CurrentOrderStatus,
-						amountFilled: CumulativeFilledQuantity
-				);
+				var status = BinanceGroupCommon.ParseExchangeAPIOrderResult(status: CurrentOrderStatus, amountFilled: CumulativeFilledQuantity);
+
 				return new ExchangeOrderResult()
 				{
 					OrderId = OrderId.ToString(),
@@ -119,25 +125,19 @@ namespace ExchangeSharp.BinanceGroup
 					Result = status,
 					ResultCode = CurrentOrderStatus,
 					Message = OrderRejectReason, // can use for multiple things in the future if needed
-					AmountFilled =
-								TradeId != null ? LastExecutedQuantity : CumulativeFilledQuantity,
+					AmountFilled = TradeId > 0 ? LastExecutedQuantity : CumulativeFilledQuantity,
 					Price = OrderPrice,
-					AveragePrice =
-								CumulativeQuoteAssetTransactedQuantity / CumulativeFilledQuantity, // Average price can be found by doing Z divided by z.
-					OrderDate = CryptoUtility.UnixTimeStampToDateTimeMilliseconds(
-								OrderCreationTime
-						),
-					CompletedDate = status.IsCompleted()
-								? (DateTime?)
-										CryptoUtility.UnixTimeStampToDateTimeMilliseconds(TransactionTime)
-								: null,
+					AveragePrice = CumulativeQuoteAssetTransactedQuantity / CumulativeFilledQuantity, // Average price can be found by doing Z divided by z.
+					OrderDate = CryptoUtility.UnixTimeStampToDateTimeMilliseconds(OrderCreationTime),
+					CompletedDate = status.IsCompleted() ? (DateTime?)CryptoUtility.UnixTimeStampToDateTimeMilliseconds(TransactionTime) : null,
 					TradeDate = CryptoUtility.UnixTimeStampToDateTimeMilliseconds(TransactionTime),
-					UpdateSequence = EventTime, // in Binance, the sequence nymber is also the EventTime
+					UpdateSequence = EventTime, // in Binance, the sequence number is also the EventTime
 					MarketSymbol = Symbol,
+
 					// IsBuy is not provided here
 					Fees = CommissionAmount,
 					FeesCurrency = CommissionAsset,
-					TradeId = TradeId,
+					TradeId = TradeId.ToString(),
 				};
 			}
 		}
@@ -145,13 +145,13 @@ namespace ExchangeSharp.BinanceGroup
 
 	internal class Order
 	{
-		[JsonProperty("s")]
+		[JsonPropertyName("s")]
 		public string Symbol { get; set; }
 
-		[JsonProperty("i")]
+		[JsonPropertyName("i")]
 		public int OrderId { get; set; }
 
-		[JsonProperty("c")]
+		[JsonPropertyName("c")]
 		public string ClientOrderId { get; set; }
 
 		public override string ToString()
@@ -162,42 +162,43 @@ namespace ExchangeSharp.BinanceGroup
 
 	internal class ListStatus
 	{
-		[JsonProperty("e")]
+		[JsonPropertyName("e")]
 		public string EventType { get; set; }
 
-		[JsonProperty("E")]
+		[JsonPropertyName("E")]
 		public long EventTime { get; set; }
 
-		[JsonProperty("s")]
+		[JsonPropertyName("s")]
 		public string Symbol { get; set; }
 
-		[JsonProperty("g")]
+		[JsonPropertyName("g")]
 		public int OrderListId { get; set; }
 
-		[JsonProperty("c")]
+		[JsonPropertyName("c")]
 		public string ContingencyType { get; set; }
 
-		[JsonProperty("l")]
+		[JsonPropertyName("l")]
 		public string ListStatusType { get; set; }
 
-		[JsonProperty("L")]
+		[JsonPropertyName("L")]
 		public string ListOrderStatus { get; set; }
 
-		[JsonProperty("r")]
+		[JsonPropertyName("r")]
 		public string ListRejectReason { get; set; }
 
-		[JsonProperty("C")]
+		[JsonPropertyName("C")]
 		public string ListClientOrderId { get; set; }
 
-		[JsonProperty("T")]
+		[JsonPropertyName("T")]
 		public long TransactionTime { get; set; }
 
-		[JsonProperty("O")]
+		[JsonPropertyName("O")]
 		public List<Order> Orders { get; set; }
 
 		public override string ToString()
 		{
-			return $"{nameof(EventType)}: {EventType}, {nameof(EventTime)}: {EventTime}, {nameof(Symbol)}: {Symbol}, {nameof(OrderListId)}: {OrderListId}, {nameof(ContingencyType)}: {ContingencyType}, {nameof(ListStatusType)}: {ListStatusType}, {nameof(ListOrderStatus)}: {ListOrderStatus}, {nameof(ListRejectReason)}: {ListRejectReason}, {nameof(ListClientOrderId)}: {ListClientOrderId}, {nameof(TransactionTime)}: {TransactionTime}, {nameof(Orders)}: {Orders}";
+			return
+				$"{nameof(EventType)}: {EventType}, {nameof(EventTime)}: {EventTime}, {nameof(Symbol)}: {Symbol}, {nameof(OrderListId)}: {OrderListId}, {nameof(ContingencyType)}: {ContingencyType}, {nameof(ListStatusType)}: {ListStatusType}, {nameof(ListOrderStatus)}: {ListOrderStatus}, {nameof(ListRejectReason)}: {ListRejectReason}, {nameof(ListClientOrderId)}: {ListClientOrderId}, {nameof(TransactionTime)}: {TransactionTime}, {nameof(Orders)}: {Orders}";
 		}
 	}
 
@@ -208,19 +209,20 @@ namespace ExchangeSharp.BinanceGroup
 	/// </summary>
 	internal class BalanceUpdate
 	{
-		[JsonProperty("e")]
+		[JsonPropertyName("e")]
 		public string EventType { get; set; }
 
-		[JsonProperty("E")]
+		[JsonPropertyName("E")]
 		public long EventTime { get; set; }
 
-		[JsonProperty("a")]
+		[JsonPropertyName("a")]
 		public string Asset { get; set; }
 
-		[JsonProperty("d")]
+		[JsonPropertyName("d")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal BalanceDelta { get; set; }
 
-		[JsonProperty("T")]
+		[JsonPropertyName("T")]
 		public long ClearTime { get; set; }
 	}
 
@@ -229,13 +231,15 @@ namespace ExchangeSharp.BinanceGroup
 	/// </summary>
 	internal class Balance
 	{
-		[JsonProperty("a")]
+		[JsonPropertyName("a")]
 		public string Asset { get; set; }
 
-		[JsonProperty("f")]
+		[JsonPropertyName("f")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal Free { get; set; }
 
-		[JsonProperty("l")]
+		[JsonPropertyName("l")]
+		[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
 		public decimal Locked { get; set; }
 
 		public override string ToString()
@@ -250,16 +254,16 @@ namespace ExchangeSharp.BinanceGroup
 	/// </summary>
 	internal class OutboundAccount
 	{
-		[JsonProperty("e")]
+		[JsonPropertyName("e")]
 		public string EventType { get; set; }
 
-		[JsonProperty("E")]
+		[JsonPropertyName("E")]
 		public long EventTime { get; set; }
 
-		[JsonProperty("u")]
+		[JsonPropertyName("u")]
 		public long LastAccountUpdate { get; set; }
 
-		[JsonProperty("B")]
+		[JsonPropertyName("B")]
 		public List<Balance> Balances { get; set; }
 
 		/// <summary> convert the Balances list to a dictionary of total amounts </summary>
@@ -268,10 +272,12 @@ namespace ExchangeSharp.BinanceGroup
 			get
 			{
 				var dict = new Dictionary<string, decimal>();
+
 				foreach (var balance in Balances)
 				{
 					dict.Add(balance.Asset, balance.Free + balance.Locked);
 				}
+
 				return dict;
 			}
 		}
@@ -282,10 +288,12 @@ namespace ExchangeSharp.BinanceGroup
 			get
 			{
 				var dict = new Dictionary<string, decimal>();
+
 				foreach (var balance in Balances)
 				{
 					dict.Add(balance.Asset, balance.Free);
 				}
+
 				return dict;
 			}
 		}
