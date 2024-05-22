@@ -898,8 +898,7 @@ namespace ExchangeSharp.BinanceGroup
 		protected override async Task<ExchangeOrderResult> OnGetOrderDetailsAsync(
 				string orderId,
 				string? marketSymbol = null,
-				bool isClientOrderId = false,
-				bool margin = false
+				bool isClientOrderId = false
 		)
 		{
 			Dictionary<string, object> payload = await GetNoncePayloadAsync();

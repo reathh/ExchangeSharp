@@ -753,7 +753,7 @@ namespace ExchangeSharp
 
 		#region Websockets Private
 
-		protected override async Task<IWebSocket> OnUserDataWebSocketAsync(Action<object> callback)
+		protected override async Task<IWebSocket> OnUserDataWebSocketAsync(Action<object> callback, bool margin = false)
 		{
 			return await ConnectPrivateWebSocketAsync(
 					url: null,

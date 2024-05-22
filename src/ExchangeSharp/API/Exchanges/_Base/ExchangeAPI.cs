@@ -346,7 +346,7 @@ namespace ExchangeSharp
 				Action<ExchangeOrderResult> callback
 		) => throw new NotImplementedException();
 
-		protected virtual Task<IWebSocket> OnUserDataWebSocketAsync(Action<object> callback) =>
+		protected virtual Task<IWebSocket> OnUserDataWebSocketAsync(Action<object> callback, bool margin = false) =>
 				throw new NotImplementedException();
 
 		#endregion API implementation
@@ -1610,8 +1610,9 @@ namespace ExchangeSharp
 		/// Get user detail over web socket
 		/// </summary>
 		/// <param name="callback">Callback</param>
+		/// <param name="margin"></param>
 		/// <returns>Web socket, call Dispose to close</returns>
-		public virtual Task<IWebSocket> GetUserDataWebSocketAsync(Action<object> callback)
+		public virtual Task<IWebSocket> GetUserDataWebSocketAsync(Action<object> callback, bool margin)
 		{
 			callback.ThrowIfNull(nameof(callback), "Callback must not be null");
 			return OnUserDataWebSocketAsync(callback);
